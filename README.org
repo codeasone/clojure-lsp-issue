@@ -1,0 +1,79 @@
+* Reproduction of clojure-lsp.crawler error
+** Environment
+*** Emacs
+#+BEGIN_EXAMPLE
+GNU Emacs 27.1.90 (build 1, x86_64-pc-linux-gnu, GTK+ Version 3.24.20, cairo version 1.16.0) of 2020-12-29
+#+END_EXAMPLE
+*** Dotemacs
+Minimal customisation apart from following hooks:
+
+#+BEGIN_SRC emacs-lisp
+(add-hook 'clojure-mode-hook 'lsp)
+(add-hook 'clojurec-mode-hook 'lsp)
+(add-hook 'clojurescript-mode-hook 'lsp)
+#+END_SRC
+*** Clojure LSP
+#+BEGIN_SRC clojure
+{:project-root "file:///home/mark/Code/Personal/clojure-lsp-issue",
+ :project-settings
+ {:dependency-scheme "jar",
+  :keep-require-at-start? true,
+  :auto-add-ns-to-new-files? false,
+  :show-docs-arity-on-same-line? true},
+ :client-settings
+ {:dependency-scheme "jar",
+  :source-paths #{"src" "test"},
+  :macro-defs {},
+  :project-specs nil,
+  :cljfmt {:indents {}},
+  :document-formatting? true,
+  :document-range-formatting? true},
+ :port "NREPL only available on :debug profile compiled binary",
+ :version "2021.02.12-03.13.12"}
+#+END_SRC
+
+** Reason for reporting
+I get 100s of similar errors across my production clj[cs] code.
+
+** Minimal code that triggers issue
+#+BEGIN_SRC clojure
+(ns example)
+
+(defn showcase
+  []
+  (map #(inc %) (range 0 10)))
+#+END_SRC
+
+** Expected clojure-lsp.out
+#+BEGIN_EXAMPLE
+INFO [clojure-lsp.main:391] - Starting server...
+DEBUG [clojure-lsp.nrepl:24] - nrepl not found, skipping nrepl server start...
+INFO [clojure-lsp.main:298] - Initializing...
+INFO [clojure-lsp.crawler:138] - Paths analyzed, took 0.042421963 secs. Caching for next startups...
+DEBUG [clojure-lsp.main:?] - :initialize 272 clojure.lang.LazySeq@1
+INFO [clojure-lsp.main:337] - Initialized
+#+END_EXAMPLE
+
+** Actual clojure-lsp.out
+#+BEGIN_EXAMPLE
+INFO [clojure-lsp.main:391] - Starting server...
+DEBUG [clojure-lsp.nrepl:24] - nrepl not found, skipping nrepl server start...
+INFO [clojure-lsp.main:298] - Initializing...
+INFO [clojure-lsp.crawler:138] - Paths analyzed, took 0.048148427 secs. Caching for next startups...
+DEBUG [clojure-lsp.crawler:122] - Cannot find position data when analysing let* {:name let*, :filename "/home/mark/Code/Personal/clojure-lsp-issue/src/example.clj", :from example, :col nil, :from-var showcase, :arity 2, :bucket :var-usages, :row nil, :to clojure.core} nil
+DEBUG [clojure-lsp.crawler:122] - Cannot find position data when analysing fn* {:name fn*, :filename "/home/mark/Code/Personal/clojure-lsp-issue/src/example.clj", :from example, :col nil, :from-var showcase, :arity 2, :bucket :var-usages, :row nil, :to clojure.core} nil
+DEBUG [clojure-lsp.main:?] - :initialize 282 clojure.lang.LazySeq@1
+INFO [clojure-lsp.main:337] - Initialized
+#+END_EXAMPLE
+
+** Steps to reproduce
+- Open =src/example.clj= in Emacs
+- =lsp= hook runs automatically
+- Visit =/tmp/clojure-lsp.xxx.out=
+
+Why are these errors reported and what is their impact?
+
+#+BEGIN_EXAMPLE
+[clojure-lsp.crawler:122] - Cannot find position data when analysing let* {:name let*, :filename "/home/mark/Code/Personal/clojure-lsp-issue/src/example.clj", :from example, :col nil, :from-var showcase, :arity 2, :bucket :var-usages, :row nil, :to clojure.core} nil
+[clojure-lsp.crawler:122] - Cannot find position data when analysing fn* {:name fn*, :filename "/home/mark/Code/Personal/clojure-lsp-issue/src/example.clj", :from example, :col nil, :from-var showcase, :arity 2, :bucket :var-usages, :row nil, :to clojure.core} nil
+#+END_EXAMPLE
