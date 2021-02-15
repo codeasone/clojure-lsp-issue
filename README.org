@@ -77,3 +77,6 @@ Why are these errors reported and what is their impact?
 [clojure-lsp.crawler:122] - Cannot find position data when analysing let* {:name let*, :filename "/home/mark/Code/Personal/clojure-lsp-issue/src/example.clj", :from example, :col nil, :from-var showcase, :arity 2, :bucket :var-usages, :row nil, :to clojure.core} nil
 [clojure-lsp.crawler:122] - Cannot find position data when analysing fn* {:name fn*, :filename "/home/mark/Code/Personal/clojure-lsp-issue/src/example.clj", :from example, :col nil, :from-var showcase, :arity 2, :bucket :var-usages, :row nil, :to clojure.core} nil
 #+END_EXAMPLE
+
+** Fixed
+https://github.com/clojure-lsp/clojure-lsp/releases/tag/2021.02.14-19.46.47
