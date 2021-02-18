@@ -1,4 +1,6 @@
-* Reproduction of clojure-lsp.crawler error
+* clojure-lsp-issue
+This repo is a minimal test-bed for investigating, reporting, and resolving various issues relating to =clojure-lsp=
+
 ** Environment
 *** Emacs
 #+BEGIN_EXAMPLE
@@ -32,19 +34,20 @@ Minimal customisation apart from following hooks:
  :version "2021.02.12-03.13.12"}
 #+END_SRC
 
-** Reason for reporting
+** DONE Cannot find position data issue
+*** Reason for reporting
 I get 100s of similar errors across my production clj[cs] code.
 
-** Minimal code that triggers issue
+*** Minimal code that triggers issue
 #+BEGIN_SRC clojure
-(ns example)
+(ns core)
 
 (defn showcase
   []
   (map #(inc %) (range 0 10)))
 #+END_SRC
 
-** Expected clojure-lsp.out
+**** Expected clojure-lsp.out
 #+BEGIN_EXAMPLE
 INFO [clojure-lsp.main:391] - Starting server...
 DEBUG [clojure-lsp.nrepl:24] - nrepl not found, skipping nrepl server start...
@@ -54,7 +57,7 @@ DEBUG [clojure-lsp.main:?] - :initialize 272 clojure.lang.LazySeq@1
 INFO [clojure-lsp.main:337] - Initialized
 #+END_EXAMPLE
 
-** Actual clojure-lsp.out
+*** Actual clojure-lsp.out
 #+BEGIN_EXAMPLE
 INFO [clojure-lsp.main:391] - Starting server...
 DEBUG [clojure-lsp.nrepl:24] - nrepl not found, skipping nrepl server start...
@@ -66,7 +69,7 @@ DEBUG [clojure-lsp.main:?] - :initialize 282 clojure.lang.LazySeq@1
 INFO [clojure-lsp.main:337] - Initialized
 #+END_EXAMPLE
 
-** Steps to reproduce
+*** Steps to reproduce
 - Open =src/example.clj= in Emacs
 - =lsp= hook runs automatically
 - Visit =/tmp/clojure-lsp.xxx.out=
@@ -78,5 +81,5 @@ Why are these errors reported and what is their impact?
 [clojure-lsp.crawler:122] - Cannot find position data when analysing fn* {:name fn*, :filename "/home/mark/Code/Personal/clojure-lsp-issue/src/example.clj", :from example, :col nil, :from-var showcase, :arity 2, :bucket :var-usages, :row nil, :to clojure.core} nil
 #+END_EXAMPLE
 
-** Fixed
+*** Fixed
 https://github.com/clojure-lsp/clojure-lsp/releases/tag/2021.02.14-19.46.47
